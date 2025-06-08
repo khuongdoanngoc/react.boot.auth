@@ -12,16 +12,23 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { LockKeyhole, Mail, LogIn } from "lucide-react";
-
+import { useLogin } from "./hooks";
 const formSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(1, { message: "Password is required" }),
 });
 
 export function Login() {
-    const [isLoading, setIsLoading] = useState(false);
+    const { login, isLoading, error } = useLogin();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -32,14 +39,7 @@ export function Login() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsLoading(true);
-
-        // Here you would typically handle the login logic
-        console.log(values);
-
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
+        login(values.email, values.password);
     }
 
     return (
@@ -49,7 +49,7 @@ export function Login() {
                     <LogIn className="h-8 w-8 inline-block mr-2" />
                     MyApp
                 </div>
-                
+
                 <Card className="border-muted/20 shadow-lg">
                     <CardHeader className="space-y-1">
                         <div className="flex justify-center mb-2">
@@ -57,12 +57,16 @@ export function Login() {
                                 <LockKeyhole className="h-6 w-6 text-primary" />
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-center">
+                            Welcome back
+                        </CardTitle>
                         <CardDescription className="text-center">
                             Enter your credentials to sign in to your account
                         </CardDescription>
                     </CardHeader>
-                    
+                    {error && (
+                        <div className="text-center text-red-500">{error}</div>
+                    )}
                     <CardContent>
                         <Form {...form}>
                             <form
@@ -117,22 +121,27 @@ export function Login() {
                                         type="submit"
                                         className="w-full transition-all font-medium"
                                         disabled={isLoading}>
-                                        {isLoading ? "Signing in..." : "Sign in"}
+                                        {isLoading
+                                            ? "Signing in..."
+                                            : "Sign in"}
                                     </Button>
                                 </div>
                             </form>
                         </Form>
                     </CardContent>
-                    
+
                     <CardFooter className="flex flex-col space-y-2 border-t pt-4">
                         <div className="text-center text-sm">
                             Don't have an account?{" "}
-                            <a href="/register" className="underline text-primary hover:text-primary/80 transition-colors font-medium">
+                            <a
+                                href="/register"
+                                className="underline text-primary hover:text-primary/80 transition-colors font-medium">
                                 Create an account
                             </a>
                         </div>
                         <div className="text-center text-xs text-muted-foreground">
-                            By signing in, you agree to our Terms of Service and Privacy Policy
+                            By signing in, you agree to our Terms of Service and
+                            Privacy Policy
                         </div>
                     </CardFooter>
                 </Card>

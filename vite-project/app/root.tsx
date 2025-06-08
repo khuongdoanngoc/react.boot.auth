@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "react-hot-toast";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -49,6 +50,7 @@ export default function App() {
     return (
         <ThemeProvider>
             <Outlet />
+            <Toaster position="top-center" reverseOrder={false} />
         </ThemeProvider>
     );
 }
